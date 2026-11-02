@@ -34,38 +34,57 @@ document.addEventListener('DOMContentLoaded', () => {
   // Audio y Música de Fondo (musicadefondo.wav)
   const bgMusic = document.getElementById('bg-music');
   let isMuted = false;
+  let audioStarted = false;
 
   if (bgMusic) {
     bgMusic.volume = 0.55; // Volumen balanceado
   }
 
-  function tryPlayMusic() {
-    if (bgMusic && bgMusic.paused && !isMuted) {
-      const playPromise = bgMusic.play();
-      if (playPromise !== undefined) {
-        playPromise.then(() => {
-          if (audioIcon) audioIcon.textContent = '🎶';
-          if (audioToggleBtn) audioToggleBtn.setAttribute('title', 'Música activada (Clic para silenciar)');
-        }).catch(() => {
-          // Si el navegador bloquea autoplay hasta interacción de usuario
-        });
-      }
+  // Función infalible para iniciar la música tanto en desktop como en móviles
+  function startBackgroundMusic() {
+    if (audioStarted || !bgMusic || isMuted) return;
+
+    if (window.soundFx) {
+      window.soundFx.ensureContext();
+    }
+
+    const playPromise = bgMusic.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        // Reproducción iniciada con éxito en el móvil
+        audioStarted = true;
+        if (audioIcon) audioIcon.textContent = '🎶';
+        if (audioToggleBtn) audioToggleBtn.setAttribute('title', 'Música activada (Clic para silenciar)');
+
+        // Solo retiramos los listeners cuando se confirmó que ya está sonando
+        cleanUnlockListeners();
+      }).catch((err) => {
+        // Si el navegador bloqueó el intento en este evento específico (ej: pointerdown),
+        // no retiramos los listeners para que touchend/click reintente de inmediato
+        console.log("Autoplay móvil esperando gesto permitido:", err);
+      });
     }
   }
 
-  // 1. Intentar reproducir de inmediato al cargar la página
-  tryPlayMusic();
+  // Lista de eventos de interacción en móviles y desktop
+  const interactionEvents = ['click', 'touchend', 'pointerup', 'touchstart', 'pointerdown'];
 
-  // 2. Desbloquear reproducción al primer toque/interacción en cualquier parte de la pantalla
-  const unlockAudio = () => {
-    tryPlayMusic();
-    document.removeEventListener('click', unlockAudio);
-    document.removeEventListener('touchstart', unlockAudio);
-    document.removeEventListener('pointerdown', unlockAudio);
-  };
-  document.addEventListener('click', unlockAudio, { passive: true });
-  document.addEventListener('touchstart', unlockAudio, { passive: true });
-  document.addEventListener('pointerdown', unlockAudio, { passive: true });
+  function cleanUnlockListeners() {
+    interactionEvents.forEach((evt) => {
+      window.removeEventListener(evt, startBackgroundMusic, true);
+      document.removeEventListener(evt, startBackgroundMusic, true);
+    });
+  }
+
+  // 1. Intentar reproducir al cargar la página
+  startBackgroundMusic();
+
+  // 2. Registrar en fase de captura (capture: true) en window y document
+  // Esto garantiza que cualquier toque en pantalla en iPhone/Android active el audio
+  interactionEvents.forEach((evt) => {
+    window.addEventListener(evt, startBackgroundMusic, { capture: true, passive: true });
+    document.addEventListener(evt, startBackgroundMusic, { capture: true, passive: true });
+  });
 
   // Control de silencio en el botón superior
   if (audioToggleBtn) {
@@ -81,6 +100,8 @@ document.addEventListener('DOMContentLoaded', () => {
           audioToggleBtn.setAttribute('title', 'Música silenciada');
         } else {
           bgMusic.play();
+          audioStarted = true;
+          cleanUnlockListeners();
           if (audioIcon) audioIcon.textContent = '🎶';
           audioToggleBtn.setAttribute('title', 'Música activada');
           if (window.soundFx) window.soundFx.playClick();
@@ -146,6 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Question 1 Answers (Sin desplazamiento automático; navegación libre)
   if (btnUniSi && btnUniNo) {
     btnUniSi.addEventListener('click', (e) => {
+      startBackgroundMusic();
       respuesta1 = 'Sí';
       checkReadyToSubmit();
 
@@ -169,6 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     btnUniNo.addEventListener('click', (e) => {
+      startBackgroundMusic();
       respuesta1 = 'No';
       checkReadyToSubmit();
 
@@ -200,6 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
 
   function selectOption(selectedItem) {
+    startBackgroundMusic();
     respuesta2 = selectedItem.label;
     checkReadyToSubmit();
 
