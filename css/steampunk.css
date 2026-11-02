@@ -1,0 +1,893 @@
+/* ==========================================================================
+   STEAMPUNK INVITATION - ALE
+   Aesthetic: Deep Midnight Blue & Antique Gold / Brass / Copper
+   Mobile-First Architecture & 3D Interactive Elements
+   ========================================================================== */
+
+:root {
+  /* Color Palette: Deep Blue & Golden Brass */
+  --bg-deep-midnight: #050d1a;
+  --bg-navy-blue: #091729;
+  --bg-slate-blue: #0f233d;
+  --bg-card-blue: rgba(10, 26, 47, 0.88);
+  --bg-card-brass: rgba(22, 43, 72, 0.92);
+
+  /* Metallic Gold & Brass Palette */
+  --gold-highlight: #fff3b0;
+  --gold-primary: #d4af37;
+  --gold-bright: #f6cd46;
+  --gold-shadow: #8c6d1f;
+  --gold-dark: #5a4510;
+  --copper-accent: #b87333;
+  --amber-glow: #ffaa00;
+  --amber-steam: rgba(255, 170, 0, 0.35);
+
+  /* Text & Accents */
+  --text-primary: #f8ecc2;
+  --text-muted: #b8c7db;
+  --text-gold: #ffd966;
+  --text-glow: 0 0 10px rgba(212, 175, 55, 0.45);
+
+  /* Borders & Shadows */
+  --border-gold: 2px solid #d4af37;
+  --box-shadow-brass: 0 10px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(212, 175, 55, 0.2);
+  --box-shadow-glow: 0 0 25px rgba(246, 205, 70, 0.35);
+  
+  /* Fonts */
+  --font-serif: 'Cinzel', serif;
+  --font-display: 'Cinzel Decorative', cursive;
+  --font-typewriter: 'Courier Prime', monospace;
+  --font-body: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Spacing */
+  --radius-steampunk: 16px;
+  --radius-btn: 12px;
+}
+
+/* ==========================================================================
+   Reset & Base Mobile-First Styles
+   ========================================================================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  height: 100%;
+  background-color: var(--bg-deep-midnight);
+}
+
+body {
+  min-height: 100%;
+  font-family: var(--font-body);
+  color: var(--text-primary);
+  background: radial-gradient(circle at 50% 20%, #0d2645 0%, var(--bg-navy-blue) 45%, var(--bg-deep-midnight) 100%);
+  background-attachment: fixed;
+  line-height: 1.5;
+  overflow-x: hidden;
+  position: relative;
+  padding-bottom: calc(40px + env(safe-area-inset-bottom, 20px));
+}
+
+/* Background Canvas for 3D Three.js Gears & Steam */
+#three-canvas-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+#three-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Subtle Vignette & Blueprint Pattern */
+.steampunk-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+  background-image: 
+    radial-gradient(circle at center, transparent 40%, rgba(3, 7, 14, 0.85) 100%),
+    linear-gradient(rgba(212, 175, 55, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212, 175, 55, 0.02) 1px, transparent 1px);
+  background-size: 100% 100%, 30px 30px, 30px 30px;
+}
+
+/* Mobile-First Main App Wrapper */
+.app-container {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 460px; /* Perfect golden ratio mobile layout */
+  margin: 0 auto;
+  padding: 16px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ==========================================================================
+   Steampunk Victorian Header & Audio Bar
+   ========================================================================== */
+.steampunk-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: linear-gradient(180deg, rgba(15, 35, 61, 0.9) 0%, rgba(8, 20, 36, 0.95) 100%);
+  border: 1px solid var(--gold-shadow);
+  border-bottom: 2px solid var(--gold-primary);
+  border-radius: 12px;
+  box-shadow: inset 0 1px 0 rgba(255, 243, 176, 0.25), 0 4px 15px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.telegram-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge-gear {
+  font-size: 1.1rem;
+  display: inline-block;
+  animation: spinSlow 12s linear infinite;
+  color: var(--gold-primary);
+  filter: drop-shadow(0 0 4px var(--amber-glow));
+}
+
+.badge-text {
+  font-family: var(--font-typewriter);
+  font-size: 0.75rem;
+  letter-spacing: 1.5px;
+  color: var(--gold-bright);
+  text-transform: uppercase;
+  font-weight: 700;
+  text-shadow: 0 0 6px rgba(212, 175, 55, 0.4);
+}
+
+.audio-toggle-btn {
+  background: radial-gradient(circle, #254063 0%, #0d1f33 100%);
+  border: 1px solid var(--gold-primary);
+  color: var(--gold-bright);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  box-shadow: inset 0 0 5px rgba(0,0,0,0.6), 0 0 8px rgba(212, 175, 55, 0.3);
+  font-size: 0.95rem;
+}
+
+.audio-toggle-btn:active {
+  transform: scale(0.92);
+  box-shadow: 0 0 12px var(--gold-bright);
+}
+
+/* ==========================================================================
+   Steampunk Cards (Plaques, Bevels, Rivets)
+   ========================================================================== */
+.steampunk-card {
+  position: relative;
+  background: var(--bg-card-blue);
+  border: 2px solid var(--gold-primary);
+  border-radius: var(--radius-steampunk);
+  padding: 20px 16px;
+  box-shadow: var(--box-shadow-brass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s ease;
+}
+
+/* Rivets on Corners */
+.steampunk-card::before,
+.steampunk-card::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff3b0 0%, #d4af37 40%, #5a4510 100%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+  z-index: 5;
+}
+
+.steampunk-card::before {
+  top: 8px;
+  left: 8px;
+  box-shadow: 
+    0 1px 3px rgba(0,0,0,0.8),
+    calc(100% - 26px) 0 0 -0.5px rgba(212, 175, 55, 0.9);
+}
+
+.steampunk-card::after {
+  bottom: 8px;
+  left: 8px;
+  box-shadow: 
+    0 1px 3px rgba(0,0,0,0.8),
+    calc(100% - 26px) 0 0 -0.5px rgba(212, 175, 55, 0.9);
+}
+
+/* Card Filigree Corner Flourishes */
+.card-corner {
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--gold-bright);
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+.card-corner-tl { top: 4px; left: 4px; border-right: none; border-bottom: none; }
+.card-corner-tr { top: 4px; right: 4px; border-left: none; border-bottom: none; }
+.card-corner-bl { bottom: 4px; left: 4px; border-right: none; border-top: none; }
+.card-corner-br { bottom: 4px; right: 4px; border-left: none; border-top: none; }
+
+/* ==========================================================================
+   Hero & GIF Ornate Victorian Frames
+   ========================================================================== */
+.gif-brass-frame {
+  position: relative;
+  width: 100%;
+  border-radius: 14px;
+  padding: 8px;
+  background: linear-gradient(135deg, #ffe082 0%, #c59b27 30%, #5a4510 70%, #d4af37 100%);
+  box-shadow: 
+    inset 0 0 12px rgba(0, 0, 0, 0.8),
+    0 8px 24px rgba(0, 0, 0, 0.7),
+    0 0 18px rgba(212, 175, 55, 0.3);
+  margin-bottom: 18px;
+  overflow: hidden;
+}
+
+.gif-inner-bezel {
+  position: relative;
+  width: 100%;
+  background: #020710;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 2px solid #2a1f0a;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.steampunk-gif {
+  width: 100%;
+  height: auto;
+  max-height: 280px;
+  object-fit: cover;
+  display: block;
+  border-radius: 8px;
+  filter: contrast(1.05) saturate(1.08);
+  transition: transform 0.4s ease;
+}
+
+.hero-card:hover .steampunk-gif {
+  transform: scale(1.02);
+}
+
+/* Metallic Plaque Label */
+.plaque-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 auto 14px;
+  padding: 4px 14px;
+  background: linear-gradient(180deg, #1b3557 0%, #0d1e34 100%);
+  border: 1px solid var(--gold-bright);
+  border-radius: 20px;
+  font-family: var(--font-serif);
+  font-size: 0.78rem;
+  letter-spacing: 1.2px;
+  color: var(--gold-bright);
+  text-transform: uppercase;
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* ==========================================================================
+   Typography & Steampunk Narrative Messages
+   ========================================================================== */
+.steampunk-title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.15rem, 5vw, 1.35rem);
+  color: var(--gold-highlight);
+  text-shadow: var(--text-glow);
+  text-align: center;
+  line-height: 1.45;
+  font-weight: 700;
+  margin-bottom: 16px;
+  letter-spacing: 0.3px;
+}
+
+.narrative-bubble {
+  position: relative;
+  background: linear-gradient(145deg, rgba(14, 34, 60, 0.9) 0%, rgba(7, 18, 33, 0.95) 100%);
+  border: 1.5px solid var(--gold-shadow);
+  border-left: 4px solid var(--gold-bright);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  box-shadow: inset 0 0 15px rgba(0,0,0,0.5), 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.bubble-text {
+  font-family: var(--font-body);
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: #fff9e6;
+  line-height: 1.5;
+  text-align: left;
+}
+
+.highlight-ale {
+  color: var(--gold-bright);
+  font-weight: 700;
+  font-family: var(--font-serif);
+  text-shadow: 0 0 8px rgba(246, 205, 70, 0.5);
+}
+
+/* ==========================================================================
+   Steampunk Tactile 3D Buttons & Controls
+   ========================================================================== */
+.btn-group-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-top: 10px;
+}
+
+.btn-group-3 {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.steampunk-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 14px 18px;
+  border-radius: var(--radius-btn);
+  font-family: var(--font-serif);
+  font-size: 1.02rem;
+  font-weight: 700;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  cursor: pointer;
+  outline: none;
+  border: none;
+  user-select: none;
+  -webkit-user-select: none;
+  text-decoration: none;
+  transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Primary Brass Button */
+.btn-brass {
+  background: linear-gradient(180deg, #ffe082 0%, #d4af37 40%, #aa8012 85%, #634509 100%);
+  color: #120c02;
+  border: 1px solid #fff3b0;
+  box-shadow: 
+    0 5px 0 #4a3407,
+    0 7px 14px rgba(0, 0, 0, 0.7),
+    inset 0 1px 2px rgba(255, 255, 255, 0.8),
+    0 0 12px rgba(212, 175, 55, 0.35);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.btn-brass:active,
+.btn-brass.active {
+  transform: translateY(4px);
+  box-shadow: 
+    0 1px 0 #4a3407,
+    0 2px 6px rgba(0, 0, 0, 0.6),
+    inset 0 2px 4px rgba(0, 0, 0, 0.5),
+    0 0 18px var(--amber-glow);
+}
+
+/* Secondary Navy-Brass Button */
+.btn-navy-brass {
+  background: linear-gradient(180deg, #1b385e 0%, #0d223d 50%, #081526 100%);
+  color: var(--gold-bright);
+  border: 1.5px solid var(--gold-primary);
+  box-shadow: 
+    0 5px 0 #050d18,
+    0 7px 14px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(212, 175, 55, 0.4),
+    0 0 10px rgba(10, 26, 47, 0.6);
+  text-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+}
+
+.btn-navy-brass:active,
+.btn-navy-brass.active {
+  transform: translateY(4px);
+  box-shadow: 
+    0 1px 0 #050d18,
+    0 2px 6px rgba(0, 0, 0, 0.6),
+    inset 0 2px 5px rgba(0, 0, 0, 0.8),
+    0 0 14px rgba(212, 175, 55, 0.6);
+}
+
+/* Specific Style for RSVP 3 Options */
+.btn-rsvp {
+  min-height: 54px;
+  font-size: 0.98rem;
+  padding: 12px 16px;
+  justify-content: flex-start;
+  text-align: left;
+  border: 1.5px solid var(--gold-shadow);
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.btn-rsvp-icon {
+  font-size: 1.3rem;
+  margin-right: 4px;
+  flex-shrink: 0;
+}
+
+.btn-rsvp-label {
+  flex-grow: 1;
+}
+
+.btn-rsvp-check {
+  font-size: 1.15rem;
+  color: var(--gold-bright);
+  opacity: 0.7;
+  font-weight: 700;
+  transition: transform 0.25s ease, opacity 0.25s ease, color 0.25s ease;
+}
+
+/* Selected State for RSVP Buttons (No Modal, Pure Selection) */
+.btn-rsvp.selected {
+  background: linear-gradient(180deg, #ffe082 0%, #d4af37 40%, #aa8012 85%, #634509 100%) !important;
+  color: #120c02 !important;
+  border: 2px solid #fff3b0 !important;
+  box-shadow: 
+    0 0 24px rgba(246, 205, 70, 0.75),
+    inset 0 1px 2px rgba(255, 255, 255, 0.9),
+    0 4px 12px rgba(0, 0, 0, 0.6) !important;
+  transform: translateY(2px) scale(1.01);
+}
+
+.btn-rsvp.selected .btn-rsvp-label {
+  font-weight: 800;
+  color: #120c02;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.btn-rsvp.selected .btn-rsvp-icon {
+  filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.5));
+}
+
+.btn-rsvp.selected .btn-rsvp-check {
+  opacity: 1;
+  color: #120c02;
+  font-weight: 900;
+  transform: scale(1.25);
+}
+
+/* Selected State for Si / No Buttons (Pure Selection) */
+.btn-uni {
+  transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.btn-uni.selected {
+  background: linear-gradient(180deg, #ffe082 0%, #d4af37 40%, #aa8012 85%, #634509 100%) !important;
+  color: #120c02 !important;
+  border: 2px solid #fff3b0 !important;
+  box-shadow: 
+    0 0 24px rgba(246, 205, 70, 0.75),
+    inset 0 1px 2px rgba(255, 255, 255, 0.9),
+    0 4px 12px rgba(0, 0, 0, 0.6) !important;
+  transform: translateY(2px) scale(1.02);
+}
+
+.btn-uni.selected span {
+  color: #120c02 !important;
+  font-weight: 800;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* ==========================================================================
+   Botón Enviar Respuestas (.txt)
+   ========================================================================== */
+.btn-enviar {
+  width: 100%;
+  font-size: 1.15rem;
+  padding: 16px 20px;
+  letter-spacing: 2px;
+  border-radius: 14px;
+  transition: all 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.btn-enviar:disabled {
+  opacity: 0.4;
+  filter: grayscale(0.85);
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.btn-enviar:not(:disabled) {
+  cursor: pointer;
+  animation: pulseGoldGlow 2.2s infinite ease-in-out;
+}
+
+.submit-hint {
+  font-family: var(--font-typewriter);
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  margin-top: 10px;
+  letter-spacing: 0.5px;
+  transition: color 0.3s ease;
+}
+
+.submit-hint.ready {
+  color: var(--gold-bright);
+  font-weight: 700;
+  text-shadow: 0 0 8px rgba(246, 205, 70, 0.6);
+}
+
+@keyframes pulseGoldGlow {
+  0%, 100% {
+    box-shadow: 0 5px 0 #4a3407, 0 7px 14px rgba(0, 0, 0, 0.7), 0 0 15px rgba(212, 175, 55, 0.4);
+  }
+  50% {
+    box-shadow: 0 5px 0 #4a3407, 0 7px 20px rgba(0, 0, 0, 0.7), 0 0 32px rgba(246, 205, 70, 0.95);
+  }
+}
+
+/* ==========================================================================
+   Mechanical Steampunk Dividers & Gauges
+   ========================================================================== */
+.steampunk-divider {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 6px 0;
+  position: relative;
+}
+
+.divider-pipe {
+  flex: 1;
+  height: 6px;
+  background: linear-gradient(180deg, #ffe082 0%, #aa8012 50%, #443006 100%);
+  border-radius: 3px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+  position: relative;
+}
+
+.divider-pipe::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: 30%;
+  width: 8px;
+  height: 10px;
+  background: #d4af37;
+  border-radius: 2px;
+  border: 1px solid #443006;
+}
+
+/* Mini Rotating Gear Centerpiece */
+.divider-gauge {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff3b0 0%, #d4af37 35%, #0d223d 85%);
+  border: 2px solid var(--gold-bright);
+  box-shadow: 0 0 12px rgba(212, 175, 55, 0.5), inset 0 0 8px rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.35rem;
+  animation: spinSlow 16s linear infinite;
+}
+
+/* ==========================================================================
+   Telegram Dynamic Response Banner (Uni / Servicio)
+   ========================================================================== */
+.telegram-response {
+  margin-top: 16px;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, rgba(8, 20, 36, 0.95) 0%, rgba(4, 11, 20, 0.98) 100%);
+  border: 1px dashed var(--gold-bright);
+  border-radius: 10px;
+  box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.8);
+  display: none; /* revealed via JS */
+  animation: slideInTelegram 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}
+
+.telegram-response.visible {
+  display: block;
+}
+
+.telegram-response-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-typewriter);
+  font-size: 0.72rem;
+  color: var(--gold-bright);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  border-bottom: 1px solid rgba(212, 175, 55, 0.3);
+  padding-bottom: 4px;
+}
+
+.telegram-response-text {
+  font-family: var(--font-body);
+  font-size: 0.98rem;
+  color: #fff;
+  line-height: 1.45;
+}
+
+/* ==========================================================================
+   Modal & Telegram Dispatch Sheet (RSVP Result)
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(3, 8, 16, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.steampunk-modal {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: radial-gradient(circle at 50% 10%, #152d4c 0%, var(--bg-navy-blue) 60%, #050e1b 100%);
+  border: 2px solid var(--gold-bright);
+  border-radius: 18px;
+  padding: 24px 20px;
+  box-shadow: 
+    0 15px 45px rgba(0, 0, 0, 0.9),
+    0 0 30px rgba(246, 205, 70, 0.35),
+    inset 0 0 20px rgba(0, 0, 0, 0.7);
+  transform: translateY(20px) scale(0.95);
+  transition: transform 0.35s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+  text-align: center;
+  overflow: hidden;
+}
+
+.modal-overlay.active .steampunk-modal {
+  transform: translateY(0) scale(1);
+}
+
+.modal-header-icon {
+  font-size: 3rem;
+  margin-bottom: 8px;
+  display: inline-block;
+  animation: pulseSteam 2s infinite ease-in-out;
+}
+
+.modal-title {
+  font-family: var(--font-serif);
+  font-size: 1.35rem;
+  color: var(--gold-highlight);
+  text-shadow: 0 0 10px rgba(246, 205, 70, 0.5);
+  margin-bottom: 12px;
+}
+
+.modal-body-text {
+  font-size: 1.05rem;
+  color: #f0f4fa;
+  margin-bottom: 22px;
+  line-height: 1.55;
+}
+
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.btn-whatsapp {
+  background: linear-gradient(180deg, #25d366 0%, #128c7e 100%);
+  color: #fff;
+  border: 1px solid #75e89d;
+  box-shadow: 0 4px 0 #075e54, 0 6px 16px rgba(0, 0, 0, 0.6);
+  font-family: var(--font-body);
+  font-size: 1.02rem;
+  font-weight: 700;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.btn-whatsapp:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #075e54;
+}
+
+.btn-close-modal {
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid rgba(212, 175, 55, 0.3);
+  font-family: var(--font-serif);
+  font-size: 0.88rem;
+  padding: 10px;
+}
+
+/* ==========================================================================
+   Steam Puff & Confetti Particles
+   ========================================================================== */
+.steam-particle {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 235, 160, 0.7) 0%, rgba(212, 175, 55, 0.2) 60%, transparent 100%);
+  animation: floatSteam 1.6s ease-out forwards;
+  z-index: 99;
+}
+
+/* 3D Pressure Gauge Widget in Second Section */
+.pressure-gauge-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 12px auto 6px;
+  padding: 6px 16px;
+  background: rgba(8, 20, 36, 0.7);
+  border-radius: 30px;
+  border: 1px solid var(--gold-shadow);
+  width: fit-content;
+}
+
+.gauge-dial {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid var(--gold-primary);
+  background: radial-gradient(circle, #ffe082 0%, #aa8012 70%);
+  position: relative;
+  box-shadow: 0 0 8px rgba(212, 175, 55, 0.4);
+}
+
+.gauge-needle {
+  position: absolute;
+  width: 2px;
+  height: 12px;
+  background: #d32f2f;
+  top: 4px;
+  left: 13px;
+  transform-origin: bottom center;
+  transform: rotate(20deg);
+  transition: transform 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+.gauge-label {
+  font-family: var(--font-typewriter);
+  font-size: 0.75rem;
+  color: var(--gold-bright);
+  letter-spacing: 1px;
+}
+
+/* ==========================================================================
+   Keyframe Animations
+   ========================================================================== */
+@keyframes spinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spinReverse {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes pulseSteam {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 6px rgba(246, 205, 70, 0.4)); }
+  50% { transform: scale(1.08); filter: drop-shadow(0 0 18px var(--amber-glow)); }
+}
+
+@keyframes slideInTelegram {
+  0% { opacity: 0; transform: translateY(-10px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes floatSteam {
+  0% {
+    opacity: 0.9;
+    transform: translate(0, 0) scale(0.5);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--tx, 0), var(--ty, -100px)) scale(2.2);
+  }
+}
+
+/* Shake Animation for "Nel" button */
+@keyframes mechanicalJolt {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-8px) rotate(-1deg); }
+  40% { transform: translateX(8px) rotate(1deg); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+
+.jolt {
+  animation: mechanicalJolt 0.45s ease-in-out;
+}
+
+/* ==========================================================================
+   Steampunk Footer
+   ========================================================================== */
+.steampunk-footer {
+  text-align: center;
+  padding: 18px 10px;
+  font-family: var(--font-typewriter);
+  font-size: 0.76rem;
+  color: var(--gold-shadow);
+  letter-spacing: 1px;
+  line-height: 1.6;
+}
+
+.steampunk-footer span {
+  color: var(--gold-primary);
+}
+
+/* ==========================================================================
+   Responsive Adaptations (Desktop / Tablet viewports)
+   ========================================================================== */
+@media (min-width: 768px) {
+  body {
+    padding-top: 30px;
+  }
+  .app-container {
+    max-width: 480px;
+    gap: 24px;
+  }
+  .steampunk-card {
+    padding: 24px 22px;
+  }
+  .steampunk-title {
+    font-size: 1.35rem;
+  }
+  .steampunk-btn:hover {
+    filter: brightness(1.1);
+  }
+}
+
